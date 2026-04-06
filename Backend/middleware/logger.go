@@ -6,8 +6,8 @@ import (
 	"time"
 )
 
-func Logger(next http.Handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func Logger(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		//start time
 		start := time.Now()
 
@@ -20,5 +20,5 @@ func Logger(next http.Handler) http.HandlerFunc {
 		//log the request method, path and duration
 		tm := r.Method + " " + r.URL.Path + " " + duration.String()
 		log.Println(tm)
-	}
+	})
 }

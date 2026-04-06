@@ -7,11 +7,9 @@ import (
 )
 
 // initRoutes initializes the HTTP routes for the application.
-func initRoutes(mux *http.ServeMux) {
+func initRoutes(mux *http.ServeMux, manager *middleware.Manager) {
 
 	// Create a middleware manager and load the necessary middleware
-	manager := middleware.NewManager()
-	manager.LoadMiddleware(middleware.Logger)
 
 	// Define routes with middleware
 	mux.Handle(

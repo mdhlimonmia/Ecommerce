@@ -1,19 +1,30 @@
 package cmd
 
 import (
-	"ecommerce/global_router"
+	"ecommerce/middleware"
 	"fmt"
 	"net/http"
 )
 
 func Serve() {
+	manager := middleware.NewManager()
+
+	manager.LoadMiddleware(
+		middleware.Preflight,
+		middleware.Cors,
+		middleware.Logger,
+	)
+
 	mux := http.NewServeMux()
-	initRoutes(mux)
+	wrappedMux := manager.WrapMux(mux)
+
+	// Initialize routes
+	initRoutes(mux, manager)
 
 	fmt.Println("Server Running on :3080")
 
 	//try to catch error
-	err := http.ListenAndServe(":3080", global_router.GlobalRouter(mux))
+	err := http.ListenAndServe(":3080", wrappedMux)
 	if err != nil {
 		fmt.Println("Error starting the server", err)
 	}

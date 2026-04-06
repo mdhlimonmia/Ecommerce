@@ -2,8 +2,8 @@ package middleware
 
 import "net/http"
 
-func AuthMiddleware(next http.Handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func AuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user := r.FormValue("user")
 		pass := r.FormValue("password")
 
@@ -12,5 +12,5 @@ func AuthMiddleware(next http.Handler) http.HandlerFunc {
 			return
 		}
 		next.ServeHTTP(w, r)
-	}
+	})
 }
