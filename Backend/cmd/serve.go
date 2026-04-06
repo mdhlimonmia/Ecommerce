@@ -2,16 +2,13 @@ package cmd
 
 import (
 	"ecommerce/global_router"
-	"ecommerce/handlers"
 	"fmt"
 	"net/http"
 )
 
 func Serve() {
 	mux := http.NewServeMux()
-	mux.Handle("GET /product", http.HandlerFunc(handlers.GetProduct))
-	mux.Handle("POST /product", http.HandlerFunc(handlers.CreateProduct))
-	mux.Handle("GET /product/{productId}", http.HandlerFunc(handlers.GetProductById))
+	initRoutes(mux)
 
 	fmt.Println("Server Running on :3080")
 
