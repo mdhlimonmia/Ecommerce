@@ -1,12 +1,15 @@
 package cmd
 
 import (
+	"ecommerce/config"
 	"ecommerce/middleware"
 	"fmt"
 	"net/http"
 )
 
 func Serve() {
+	config := config.GetConfig()
+
 	manager := middleware.NewManager()
 
 	manager.LoadMiddleware(
@@ -21,10 +24,11 @@ func Serve() {
 	// Initialize routes
 	initRoutes(mux, manager)
 
-	fmt.Println("Server Running on :3080")
+	port := ":" + config.HttpPort
+	fmt.Println("Server Running on:", port)
 
 	//try to catch error
-	err := http.ListenAndServe(":3080", wrappedMux)
+	err := http.ListenAndServe(port, wrappedMux)
 	if err != nil {
 		fmt.Println("Error starting the server", err)
 	}
