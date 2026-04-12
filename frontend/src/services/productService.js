@@ -4,6 +4,8 @@ const DEFAULT_HEADERS = {
   "Content-Type": "application/json",
 };
 
+const apiEndpoint = (path) => `${API_URL}${path.startsWith("/") ? "" : "/"}${path}`;
+
 const parseJsonResponse = async (response) => {
   if (!response.ok) {
     const text = await response.text();
@@ -14,7 +16,7 @@ const parseJsonResponse = async (response) => {
 };
 
 export const getProducts = async () => {
-  const response = await fetch(`${API_URL}/products`, {
+  const response = await fetch(apiEndpoint("/products"), {
     method: "GET",
     headers: DEFAULT_HEADERS,
   });
@@ -23,7 +25,7 @@ export const getProducts = async () => {
 };
 
 export const createProduct = async (product) => {
-  const response = await fetch(`${API_URL}/products?user=admin&password=1234`, {
+  const response = await fetch(apiEndpoint("/products?user=admin&password=1234"), {
     method: "POST",
     headers: DEFAULT_HEADERS,
     body: JSON.stringify(product),
@@ -33,7 +35,7 @@ export const createProduct = async (product) => {
 };
 
 export const getProductById = async (productId) => {
-  const response = await fetch(`${API_URL}/products/${productId}`, {
+  const response = await fetch(apiEndpoint(`/products/${productId}`), {
     method: "GET",
     headers: DEFAULT_HEADERS,
   });

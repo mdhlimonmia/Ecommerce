@@ -1,6 +1,9 @@
 package middleware
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 func Cors(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -8,7 +11,7 @@ func Cors(next http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PATCH, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		w.Header().Set("Content-Type", "application/json")
-
+		fmt.Println("hit Cors")
 		next.ServeHTTP(w, r)
 	})
 }

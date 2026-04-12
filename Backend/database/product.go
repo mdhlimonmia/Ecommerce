@@ -1,14 +1,58 @@
 package database
 
+import "fmt"
+
 type Product struct {
-	ID          int
-	Title       string
-	Description string
-	Price       float64
-	ImgUrl      string
+	ID          int     `json:"id"`
+	Title       string  `json:"title"`
+	Description string  `json:"description"`
+	Price       float64 `json:"price"`
+	ImgUrl      string  `json:"imgUrl"`
 }
 
-var ProductList []Product
+var productList []Product
+
+func StoreProduct(p Product) int {
+	p.ID = len(productList) + 1
+	fmt.Println("Storing product: ", p)
+	productList = append(productList, p)
+	return p.ID
+}
+
+func GetProductsList() []Product {
+	return productList
+}
+
+func GetProductById(id int) (Product, bool) {
+	for _, product := range productList {
+		if product.ID == id {
+			return product, true
+		}
+	}
+	return Product{}, false
+}
+
+func Update(id int, p Product) (Product, bool) {
+	p.ID = id
+	for i, prd := range productList {
+		if prd.ID == id {
+			productList[i] = p
+			fmt.Println(p)
+			return p, true
+		}
+	}
+	return Product{}, false
+}
+
+func DeleteProduct(id int) bool {
+	for i, prd := range productList {
+		if prd.ID == id {
+			productList = append(productList[:i], productList[i+1:]...)
+			return true
+		}
+	}
+	return false
+}
 
 func init() {
 	prd1 := Product{
@@ -47,9 +91,9 @@ func init() {
 		ImgUrl:      "https://www.veggiesbasket.co.za/wp-content/uploads/2021/06/42E9as7NaTaAi4A6JcuFwG.jpg",
 	}
 
-	ProductList = append(ProductList, prd1)
-	ProductList = append(ProductList, prd2)
-	ProductList = append(ProductList, prd3)
-	ProductList = append(ProductList, prd4)
-	ProductList = append(ProductList, prd5)
+	productList = append(productList, prd1)
+	productList = append(productList, prd2)
+	productList = append(productList, prd3)
+	productList = append(productList, prd4)
+	productList = append(productList, prd5)
 }

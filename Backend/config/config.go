@@ -13,7 +13,7 @@ type Config struct {
 	HttpPort    string
 }
 
-var Configuration Config
+var configuration Config
 
 func loadConfig() {
 	err := godotenv.Load()
@@ -40,7 +40,7 @@ func loadConfig() {
 		os.Exit(1)
 	}
 
-	Configuration = Config{
+	configuration = Config{
 		Version:     version,
 		ServiceName: serviceName,
 		HttpPort:    port,
@@ -49,5 +49,5 @@ func loadConfig() {
 
 func GetConfig() Config {
 	loadConfig()
-	return Configuration
+	return configuration
 }

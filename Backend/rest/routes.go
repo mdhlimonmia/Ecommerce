@@ -1,8 +1,8 @@
-package cmd
+package rest
 
 import (
-	"ecommerce/handlers"
-	"ecommerce/middleware"
+	"ecommerce/rest/handlers"
+	"ecommerce/rest/middleware"
 	"net/http"
 )
 
@@ -22,13 +22,25 @@ func initRoutes(mux *http.ServeMux, manager *middleware.Manager) {
 		"POST /products",
 		manager.With(
 			http.HandlerFunc(handlers.CreateProduct),
-			middleware.AuthMiddleware,
+			// middleware.AuthMiddleware,
 		),
 	)
 	mux.Handle(
 		"GET /products/{productId}",
 		manager.With(
 			http.HandlerFunc(handlers.GetProductById),
+		),
+	)
+	mux.Handle(
+		"PUT /products/{productId}", //PUT = update more than one field, PATCH = update one field
+		manager.With(
+			http.HandlerFunc(handlers.UpdateProduct),
+		),
+	)
+	mux.Handle(
+		"DELETE /products/{productId}",
+		manager.With(
+			http.HandlerFunc(handlers.DeleteProduct),
 		),
 	)
 

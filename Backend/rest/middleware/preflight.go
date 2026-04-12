@@ -13,6 +13,7 @@ func Preflight(next http.Handler) http.Handler {
 			fmt.Println("OPTIONS hit............")
 			return
 		}
+		fmt.Println("hit Preflight")
 		next.ServeHTTP(w, r)
 	})
 }

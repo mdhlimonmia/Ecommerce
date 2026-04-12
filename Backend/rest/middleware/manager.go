@@ -1,6 +1,9 @@
 package middleware
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 type Middleware func(http.Handler) http.Handler
 
@@ -20,12 +23,9 @@ func (mngr *Manager) LoadMiddleware(middleware ...Middleware) {
 
 func (mngr *Manager) With(next http.Handler, middleware ...Middleware) http.Handler {
 
+	fmt.Println("............hit middleware manager...........")
 	for _, middleware := range middleware {
 		next = middleware(next)
-	}
-
-	for _, globalMiddleware := range mngr.globalMiddlewares {
-		next = globalMiddleware(next)
 	}
 
 	return next
@@ -33,6 +33,7 @@ func (mngr *Manager) With(next http.Handler, middleware ...Middleware) http.Hand
 
 func (mngr *Manager) WrapMux(next http.Handler) http.Handler {
 
+	fmt.Println("hit Global Middleware...........")
 	for _, globalMiddleware := range mngr.globalMiddlewares {
 		next = globalMiddleware(next)
 	}
