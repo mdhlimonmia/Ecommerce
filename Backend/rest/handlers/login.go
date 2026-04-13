@@ -48,7 +48,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		LastName:    user.LastName,
 		Email:       user.Email,
 		IsShopOwner: user.IsShopOwner,
-	}, cnf.JwtSecret)
+	}, cnf.JwtSecretKey)
 	if err != nil {
 		http.Error(w, "Error creating JWT token", http.StatusInternalServerError)
 		return

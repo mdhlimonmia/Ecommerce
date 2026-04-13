@@ -22,7 +22,7 @@ func initRoutes(mux *http.ServeMux, manager *middleware.Manager) {
 		"POST /products",
 		manager.With(
 			http.HandlerFunc(handlers.CreateProduct),
-			// middleware.AuthMiddleware,
+			middleware.AuthenticateJWT,
 		),
 	)
 	mux.Handle(
@@ -35,12 +35,14 @@ func initRoutes(mux *http.ServeMux, manager *middleware.Manager) {
 		"PUT /products/{productId}", //PUT = update more than one field, PATCH = update one field
 		manager.With(
 			http.HandlerFunc(handlers.UpdateProduct),
+			middleware.AuthenticateJWT,
 		),
 	)
 	mux.Handle(
 		"DELETE /products/{productId}",
 		manager.With(
 			http.HandlerFunc(handlers.DeleteProduct),
+			middleware.AuthenticateJWT,
 		),
 	)
 	mux.Handle(
@@ -53,7 +55,7 @@ func initRoutes(mux *http.ServeMux, manager *middleware.Manager) {
 		"GET /users",
 		manager.With(
 			http.HandlerFunc(handlers.GetUsers),
-			middleware.AuthMiddleware,
+			middleware.AuthenticateJWT,
 		),
 	)
 	mux.Handle(

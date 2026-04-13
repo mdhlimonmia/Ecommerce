@@ -8,10 +8,10 @@ import (
 )
 
 type Config struct {
-	Version     string
-	ServiceName string
-	HttpPort    string
-	JwtSecret   string
+	Version      string
+	ServiceName  string
+	HttpPort     string
+	JwtSecretKey string
 }
 
 var configuration Config
@@ -48,10 +48,10 @@ func loadConfig() {
 	}
 
 	configuration = Config{
-		Version:     version,
-		ServiceName: serviceName,
-		HttpPort:    port,
-		JwtSecret:   jwtSecret,
+		Version:      version,
+		ServiceName:  serviceName,
+		HttpPort:     port,
+		JwtSecretKey: jwtSecret,
 	}
 }
 
