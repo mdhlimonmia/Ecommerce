@@ -22,7 +22,14 @@ func (u User) Store() User {
 }
 
 func UserList() []User {
-	return users
+	var userList []User
+	for _, u := range users {
+		var us User
+		us.FirstName = u.FirstName
+		us.LastName = u.LastName
+		userList = append(userList, us)
+	}
+	return userList
 }
 
 func FindUser(email string) bool {
