@@ -1,4 +1,4 @@
-package handlers
+package user
 
 import (
 	"ecommerce/database"
@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func Create_user(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Create_user(w http.ResponseWriter, r *http.Request) {
 	var newUser database.User
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&newUser)

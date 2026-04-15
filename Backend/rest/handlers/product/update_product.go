@@ -1,4 +1,4 @@
-package handlers
+package product
 
 import (
 	"ecommerce/database"
@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func UpdateProduct(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	var newProduct database.Product
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&newProduct)

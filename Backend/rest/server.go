@@ -2,12 +2,32 @@ package rest
 
 import (
 	"ecommerce/config"
+	"ecommerce/rest/handlers/product"
+	"ecommerce/rest/handlers/user"
 	"ecommerce/rest/middleware"
 	"fmt"
 	"net/http"
 )
 
-func Start(config config.Config) {
+type Server struct {
+	config         *config.Config
+	productHandler *product.Handler
+	userHandler    *user.Handler
+}
+
+func NewServer(
+	config *config.Config,
+	productHandler *product.Handler,
+	userHandler *user.Handler,
+) *Server {
+	return &Server{
+		config:         config,
+		productHandler: productHandler,
+		userHandler:    userHandler,
+	}
+}
+
+func (server *Server) Start() {
 	manager := middleware.NewManager()
 
 	manager.LoadMiddleware(
@@ -20,9 +40,11 @@ func Start(config config.Config) {
 	wrappedMux := manager.WrapMux(mux)
 
 	// Initialize routes
-	initRoutes(mux, manager)
+	// initRoutes(mux, manager)
+	server.productHandler.RegisterRoutes(mux, manager)
+	server.userHandler.RegisterRoutes(mux, manager)
 
-	port := ":" + config.HttpPort
+	port := ":" + server.config.HttpPort
 	fmt.Println("Server Running on:", port)
 
 	//try to catch error
