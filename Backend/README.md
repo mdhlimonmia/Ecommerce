@@ -112,5 +112,4 @@ Backend/
 
 ## Notes
 
-- The backend is designed to work with the frontend in the root workspace.
 - If you want persistence later, the `database/` package is the place to replace with a real database layer.
