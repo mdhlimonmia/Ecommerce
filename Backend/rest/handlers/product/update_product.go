@@ -1,7 +1,7 @@
 package product
 
 import (
-	"ecommerce/database"
+	"ecommerce/repo"
 	"ecommerce/util"
 	"encoding/json"
 	"fmt"
@@ -9,22 +9,34 @@ import (
 	"strconv"
 )
 
+type ReqUpdateProduct struct {
+	Title       string  `json:"title"`
+	Description string  `json:"description"`
+	Price       float64 `json:"price"`
+	ImgUrl      string  `json:"imgUrl"`
+}
+
 func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
-	var newProduct database.Product
+	var newProduct ReqUpdateProduct
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&newProduct)
 	id, err := strconv.Atoi(r.PathValue("productId"))
 	if err != nil {
-		http.Error(w, "Please Give Correct Input", 400)
+		util.SendData(w, "Please Give Correct Input", http.StatusBadRequest)
 		return
 	}
 
 	fmt.Println("Product id hit: ", id)
-	p, ok := database.Update(id, newProduct)
-	if !ok {
-		http.Error(w, "Product not found", 404)
+	p, err := h.productRepo.Update(id, repo.Product{
+		Title:       newProduct.Title,
+		Description: newProduct.Description,
+		Price:       newProduct.Price,
+		ImgUrl:      newProduct.ImgUrl,
+	})
+	if err != nil {
+		util.SendData(w, "Product Not Found", http.StatusNotFound)
 		return
 	}
 
-	util.SendData(w, p, 200)
+	util.SendData(w, p, http.StatusOK)
 }

@@ -1,12 +1,15 @@
 package user
 
 import (
-	"ecommerce/database"
 	"ecommerce/util"
 	"net/http"
 )
 
 func (h *Handler) GetUsers(w http.ResponseWriter, r *http.Request) {
-	userList := database.UserList()
+	userList, err := h.userRepo.UserList()
+	if err != nil {
+		util.SendData(w, "Error fetching users", http.StatusInternalServerError)
+		return
+	}
 	util.SendData(w, userList, http.StatusCreated)
 }

@@ -10,18 +10,18 @@ import (
 )
 
 type Server struct {
-	config         *config.Config
+	cnf            *config.Config
 	productHandler *product.Handler
 	userHandler    *user.Handler
 }
 
 func NewServer(
-	config *config.Config,
+	cnf *config.Config,
 	productHandler *product.Handler,
 	userHandler *user.Handler,
 ) *Server {
 	return &Server{
-		config:         config,
+		cnf:            cnf,
 		productHandler: productHandler,
 		userHandler:    userHandler,
 	}
@@ -44,7 +44,7 @@ func (server *Server) Start() {
 	server.productHandler.RegisterRoutes(mux, manager)
 	server.userHandler.RegisterRoutes(mux, manager)
 
-	port := ":" + server.config.HttpPort
+	port := ":" + server.cnf.HttpPort
 	fmt.Println("Server Running on:", port)
 
 	//try to catch error

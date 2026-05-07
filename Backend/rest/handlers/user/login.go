@@ -1,8 +1,6 @@
 package user
 
 import (
-	"ecommerce/config"
-	"ecommerce/database"
 	"ecommerce/util"
 	"encoding/json"
 	"log"
@@ -22,25 +20,28 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&TryUser)
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "Invalid Request", http.StatusBadRequest)
+		util.SendData(w, "Invalid Request", http.StatusBadRequest)
 		return
 	}
 
 	//Check if the email exists in the database
-	findEmail := database.FindUser(TryUser.Email)
+	findEmail := h.userRepo.FindUser(TryUser.Email)
 	if findEmail == false {
-		http.Error(w, "Email Not Found.", http.StatusBadRequest)
+		util.SendData(w, "Email Not Found.", http.StatusBadRequest)
 		return
 	}
 	//Authenticate the user with the provided email and password
-	user := database.AuthUser(TryUser.Email, TryUser.Password)
+	user, err := h.userRepo.AuthUser(TryUser.Email, TryUser.Password)
+	if err != nil {
+		util.SendData(w, "Error authenticating user", http.StatusInternalServerError)
+		return
+	}
 	if user == nil {
-		http.Error(w, "Invalid Password.", http.StatusBadRequest)
+		util.SendData(w, "Invalid Password.", http.StatusBadRequest)
 		return
 	}
 
 	//Create a JWT token for the authenticated user
-	cnf := config.GetConfig()
 	id := strconv.Itoa(user.ID)
 	accessToken, err := util.CreateJwt(util.Payload{
 		Sub:         id,
@@ -48,9 +49,9 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		LastName:    user.LastName,
 		Email:       user.Email,
 		IsShopOwner: user.IsShopOwner,
-	}, cnf.JwtSecretKey)
+	}, h.cnf.JwtSecretKey)
 	if err != nil {
-		http.Error(w, "Error creating JWT token", http.StatusInternalServerError)
+		util.SendData(w, "Error creating JWT token", http.StatusInternalServerError)
 		return
 	}
 

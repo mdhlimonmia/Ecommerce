@@ -1,12 +1,19 @@
 package product
 
 import (
-	"ecommerce/database"
+	"ecommerce/repo"
 	"ecommerce/util"
 	"encoding/json"
 	"fmt"
 	"net/http"
 )
+
+type ReqCreateProduct struct {
+	Title       string  `json:"title"`
+	Description string  `json:"description"`
+	Price       float64 `json:"price"`
+	ImgUrl      string  `json:"imgUrl"`
+}
 
 func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	// handleCors(w)
@@ -17,16 +24,24 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 	fmt.Println("CreateProduct handler hit")
-	var newProduct database.Product
+	var newProduct ReqCreateProduct
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&newProduct)
 	if err != nil {
-		http.Error(w, "Please Give Correct Input", 400)
+		util.SendData(w, "Please Give Correct Input", http.StatusBadRequest)
 		return
 	}
 
-	id := database.StoreProduct(newProduct)
-	newProduct.ID = id
+	createProduct, err := h.productRepo.Create(repo.Product{
+		Title:       newProduct.Title,
+		Description: newProduct.Description,
+		Price:       newProduct.Price,
+		ImgUrl:      newProduct.ImgUrl,
+	})
+	if err != nil {
+		util.SendData(w, "Error creating product", http.StatusInternalServerError)
+		return
+	}
 
-	util.SendData(w, newProduct, 201)
+	util.SendData(w, createProduct, http.StatusCreated)
 }

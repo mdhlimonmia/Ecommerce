@@ -1,7 +1,6 @@
 package product
 
 import (
-	"ecommerce/database"
 	"ecommerce/util"
 	"fmt"
 	"net/http"
@@ -12,16 +11,21 @@ func (h *Handler) GetProductById(w http.ResponseWriter, r *http.Request) {
 	productId := r.PathValue("productId")
 	id, err := strconv.Atoi(productId)
 	if err != nil {
-		http.Error(w, "Invalid Product ID", 400)
+		util.SendData(w, "Invalid Product ID", http.StatusBadRequest)
 		return
 	}
 	fmt.Println("productId: ", id)
 
-	p, found := database.GetProductById(id)
-	if found {
-		util.SendData(w, p, 200)
+	p, err := h.productRepo.Get(id)
+	if err != nil {
+		util.SendData(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-	http.Error(w, "Product Not Found", 404)
+	if p == nil {
+		util.SendData(w, "Product not found", http.StatusNotFound)
+		return
+	}
+
+	util.SendData(w, p, http.StatusOK)
 }
