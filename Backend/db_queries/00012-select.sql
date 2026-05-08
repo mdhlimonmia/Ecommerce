@@ -1,0 +1,1 @@
+select * from users where email = 'john.doe@example.com' and password = 'password123';   
