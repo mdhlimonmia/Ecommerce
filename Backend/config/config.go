@@ -3,10 +3,12 @@ package config
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
 
+// Config struct to hold the configuration values
 type Config struct {
 	Version      string
 	ServiceName  string
@@ -61,4 +63,81 @@ func GetConfig() *Config {
 	}
 	return configuration
 }
- 
+
+// Config fro database connection
+type DbConfig struct {
+	Host     string
+	Port     int
+	User     string
+	Password string
+	DbName   string
+	SslMode  string
+}
+
+var dbConfig *DbConfig
+
+func loadDbConfig() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+		os.Exit(1)
+	}
+	host := os.Getenv("DB_HOST")
+	if host == "" {
+		log.Fatal("DB_HOST not set in .env file")
+		os.Exit(1)
+	}
+
+	port := os.Getenv("DB_PORT")
+	if port == "" {
+		log.Fatal("DB_PORT not set in .env file")
+		os.Exit(1)
+	}
+
+	dbPort, err := strconv.ParseInt(port, 10, 64)
+	if err != nil {
+		log.Fatal("DB_PORT must be a valid integer")
+		os.Exit(1)
+	}
+
+	user := os.Getenv("DB_USER")
+	if user == "" {
+		log.Fatal("DB_USER not set in .env file")
+		os.Exit(1)
+	}
+
+	password := os.Getenv("DB_PASSWORD")
+	if password == "" {
+		log.Fatal("DB_PASSWORD not set in .env file")
+		os.Exit(1)
+	}
+
+	name := os.Getenv("DB_NAME")
+	if name == "" {
+		log.Fatal("DB_NAME not set in .env file")
+		os.Exit(1)
+	}
+
+	sslMode := os.Getenv("ENABLE_SSL_MODE")
+	if sslMode == "true" {
+		sslMode = "enable"
+	} else {
+		sslMode = "disable"
+	}
+
+	dbConfig = &DbConfig{
+		Host:     host,
+		Port:     int(dbPort),
+		User:     user,
+		Password: password,
+		DbName:   name,
+		SslMode:  sslMode,
+	}
+}
+
+func GetDbConfig() *DbConfig {
+	if dbConfig == nil {
+		loadDbConfig()
+	}
+	return dbConfig
+}

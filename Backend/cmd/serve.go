@@ -14,7 +14,7 @@ import (
 
 func Serve() {
 
-	dbCon, err := db.NewConnection()
+	dbCon, err := db.NewConnection(config.GetDbConfig())
 	if err != nil {
 		fmt.Println("Error connecting to database:", err)
 		os.Exit(1)

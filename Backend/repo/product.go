@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
@@ -77,6 +78,9 @@ func (r *productRepo) Get(id int) (*Product, error) {
 	err := r.db.Get(&p, query, id)
 
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		return nil, err
 	}
 	p.ID = id
@@ -98,6 +102,9 @@ func (r *productRepo) List() ([]*Product, error) {
 	`
 	err := r.db.Select(&products, query)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		return nil, err
 	}
 
@@ -125,6 +132,9 @@ func (r *productRepo) Update(id int, p Product) (*Product, error) {
 	`
 	_, err := r.db.Exec(query, p.Title, p.Description, p.Price, p.ImgUrl, id)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		return nil, err
 	}
 	p.ID = id
@@ -145,6 +155,9 @@ func (r *productRepo) Delete(id int) error {
 	`
 	_, err := r.db.Exec(query, id)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil
+		}
 		return err
 	}
 	return nil
