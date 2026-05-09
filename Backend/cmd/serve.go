@@ -20,6 +20,12 @@ func Serve() {
 		os.Exit(1)
 	}
 
+	err = db.MigrateDB(dbCon, "./migrations")
+	if err != nil {
+		fmt.Println("Error migrating database:", err)
+		os.Exit(1)
+	}
+
 	cnf := config.GetConfig()
 	m := middleware.NewMiddlewares(cnf)
 
