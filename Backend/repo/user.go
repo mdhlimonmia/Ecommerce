@@ -1,27 +1,18 @@
 package repo
 
 import (
+	"ecommerce/domain"
+	"ecommerce/user"
+
 	"github.com/jmoiron/sqlx"
 )
 
-type User struct {
-	ID          int    `json:"id" db:"id"`
-	FirstName   string `json:"first_name" db:"first_name"`
-	LastName    string `json:"last_name" db:"last_name"`
-	Email       string `json:"email" db:"email"`
-	Password    string `json:"password" db:"password"`
-	IsShopOwner bool   `json:"is_shop_owner" db:"is_shop_owner"`
+type UserRepo interface {
+	user.UserRepo
 }
 
 type userRepo struct {
 	db *sqlx.DB
-}
-
-type UserRepo interface {
-	Create(u User) (*User, error)
-	UserList() ([]*User, error)
-	FindUser(email string) bool
-	AuthUser(email string, pass string) (*User, error)
 }
 
 func NewUserRepo(db *sqlx.DB) UserRepo {
@@ -30,7 +21,7 @@ func NewUserRepo(db *sqlx.DB) UserRepo {
 	}
 }
 
-func (r *userRepo) Create(u User) (*User, error) {
+func (r *userRepo) Create(u domain.User) (*domain.User, error) {
 	// if u.ID != 0 {
 	// 	return &u, nil
 	// }
@@ -60,7 +51,7 @@ func (r *userRepo) Create(u User) (*User, error) {
 	rows, err := r.db.NamedQuery(query, u)
 	if err != nil {
 		// fmt.Println("Error creating user:", err)
-		// println("Query:", query)
+		// println("Query:", q uery)
 		return nil, err
 	}
 	if rows.Next() {
@@ -73,7 +64,7 @@ func (r *userRepo) Create(u User) (*User, error) {
 	return &u, nil
 }
 
-func (r *userRepo) UserList() ([]*User, error) {
+func (r *userRepo) UserList() ([]*domain.User, error) {
 	// var userList []*User
 	// for _, u := range r.users {
 	// 	var us User
@@ -82,7 +73,7 @@ func (r *userRepo) UserList() ([]*User, error) {
 	// 	userList = append(userList, &us)
 	// }
 	// return userList, nil
-	var userList []*User
+	var userList []*domain.User
 	query := `SELECT id, first_name, last_name, email, password, is_shop_owner FROM users`
 	err := r.db.Select(&userList, query)
 	if err != nil {
@@ -92,7 +83,7 @@ func (r *userRepo) UserList() ([]*User, error) {
 }
 
 func (r *userRepo) FindUser(email string) bool {
-	var user User
+	var user domain.User
 	query := `SELECT id FROM users WHERE email = $1 LIMIT 1`
 
 	err := r.db.Get(&user, query, email)
@@ -102,8 +93,8 @@ func (r *userRepo) FindUser(email string) bool {
 	return true
 }
 
-func (r *userRepo) AuthUser(email string, pass string) (*User, error) {
-	var user User
+func (r *userRepo) AuthUser(email string, pass string) (*domain.User, error) {
+	var user domain.User
 	query := `SELECT id, first_name, last_name, email, password, is_shop_owner FROM users WHERE email = $1 AND password = $2 LIMIT 1`
 
 	err := r.db.Get(&user, query, email, pass)

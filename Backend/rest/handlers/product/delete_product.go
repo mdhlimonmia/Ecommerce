@@ -16,7 +16,7 @@ func (h *Handler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.productRepo.Delete(idInt)
+	err = h.svc.Delete(idInt)
 	if err != nil {
 		util.SendData(w, "Product deleted successfully", http.StatusOK)
 		return

@@ -25,13 +25,13 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Check if the email exists in the database
-	findEmail := h.userRepo.FindUser(TryUser.Email)
+	findEmail := h.svc.FindUser(TryUser.Email)
 	if findEmail == false {
 		util.SendData(w, "Email Not Found.", http.StatusBadRequest)
 		return
 	}
 	//Authenticate the user with the provided email and password
-	user, err := h.userRepo.AuthUser(TryUser.Email, TryUser.Password)
+	user, err := h.svc.AuthUser(TryUser.Email, TryUser.Password)
 	if err != nil {
 		util.SendData(w, "Error authenticating user", http.StatusInternalServerError)
 		return
