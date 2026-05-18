@@ -1,10 +1,14 @@
 package product
 
 import (
+	"ecommerce/domain"
 	"ecommerce/util"
 	"net/http"
 	"strconv"
+	"sync"
 )
+
+var wg sync.WaitGroup
 
 func (h *Handler) GetProduct(w http.ResponseWriter, r *http.Request) {
 	limitStr := r.URL.Query().Get("limit")
@@ -18,19 +22,36 @@ func (h *Handler) GetProduct(w http.ResponseWriter, r *http.Request) {
 	if page <= 0 {
 		page = 1
 	}
+	var productList []*domain.Product
 
-	productList, err := h.svc.List(limit, page)
-	if err != nil {
-		util.SendData(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		product, err := h.svc.List(limit, page)
+		if err != nil {
+			util.SendData(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		if product == nil {
+			util.SendData(w, "No products found", http.StatusNotFound)
+			return
+		}
+		productList = product
+	}()
 
-	if productList == nil {
-		util.SendData(w, "No products found", http.StatusNotFound)
-		return
-	}
+	var total int
 
-	total, _ := h.svc.TotalProducts() // You need to implement this function to get the total number of products
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		t, err := h.svc.TotalProducts() // You need to implement this function to get the total number of products
+		if err != nil {
+			util.SendData(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		total = t
+	}()
 
+	wg.Wait()
 	util.SendPage(w, productList, limit, page, total)
 }
