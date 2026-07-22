@@ -26,6 +26,16 @@ func (h *Handler) Create_user(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if newUser.FirstName == "" || newUser.LastName == "" || newUser.Email == "" || newUser.Password == "" {
+		util.SendData(w, "Missing required fields", http.StatusBadRequest)
+		return
+	}
+
+	if h.svc.FindUser(newUser.Email) {
+		util.SendData(w, "User already exists", http.StatusConflict)
+		return
+	}
+
 	createUser, err := h.svc.Create(domain.User{
 		FirstName:   newUser.FirstName,
 		LastName:    newUser.LastName,

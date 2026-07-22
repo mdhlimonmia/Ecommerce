@@ -4,6 +4,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
+	"fmt"
 	"net/http"
 	"strings"
 )
@@ -15,6 +16,7 @@ func base64UrlEncode(data []byte) string {
 
 func (m *Middlewares) AuthenticateJWT(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("############################AuthenticateJWT middleware called")
 		header := r.Header.Get("Authorization")
 		if header == "" {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)

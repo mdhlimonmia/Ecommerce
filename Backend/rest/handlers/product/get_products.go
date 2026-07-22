@@ -16,14 +16,15 @@ func (h *Handler) GetProduct(w http.ResponseWriter, r *http.Request) {
 
 	limit, _ := strconv.Atoi(limitStr)
 	if limit <= 0 {
-		limit = 10
+		limit = 15
 	}
 	page, _ := strconv.Atoi(pageStr)
 	if page <= 0 {
 		page = 1
 	}
-	var productList []*domain.Product
 
+	var productList []*domain.Product
+	//Go routine to fetch products
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
